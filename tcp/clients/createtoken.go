@@ -11,7 +11,7 @@ import (
 func СreateToken() {
 
 	usIdObj, _ := primitive.ObjectIDFromHex("64c21e098964718d5e68bdb1")
-	// Создаем структуру для вашего запроса..
+	// Создаем структуру для вашего запроса.
 	request := RequestСreateToken{
 		Key:    configs.Cfg.ServiceKeys.ServiceSupport,
 		Method: MethodCreateToken,
