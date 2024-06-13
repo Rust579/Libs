@@ -2,9 +2,10 @@ package main
 
 import (
 	"Libs/configs"
-	"Libs/tcp/clients"
 	"github.com/sirupsen/logrus"
 )
+
+var gfsd = make(chan bool)
 
 func main() {
 
@@ -13,6 +14,12 @@ func main() {
 		logrus.Fatalf("error open config file: %s", err.Error())
 	}
 
-	clients.GetUserData()
+	//clients.GetUserData()
+
+	//hagrid.InitRmq()
+
+	//websoket_client.WSClient()
+
+	//<-gfsd
 
 }

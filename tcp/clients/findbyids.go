@@ -10,7 +10,7 @@ import (
 
 func FindByIds() {
 
-	usIdObj, _ := primitive.ObjectIDFromHex("626538013814c85c474dd491")
+	usIdObj, _ := primitive.ObjectIDFromHex("65eec57c5b804ea2af8e4ee3")
 	// Создаем структуру для вашего запроса.
 	request := RequestFindByIds{
 		Key:    configs.Cfg.ServiceKeys.ServiceSupport,
@@ -23,7 +23,7 @@ func FindByIds() {
 
 	var resp *Response
 
-	conn, err := net.Dial("tcp", configs.Cfg.OneId.LocalTcpUrl)
+	conn, err := net.Dial("tcp", configs.Cfg.OneId.ProdTcpUrl)
 	if err != nil {
 		fmt.Println("Ошибка при подключении к серверу:", err)
 		return

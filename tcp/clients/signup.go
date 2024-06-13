@@ -15,8 +15,8 @@ func SignUp() {
 		//Token:   "9952f1088915435fac3f8f52064bfad86517530116166f8ce5854dd7bef3332e",
 		Service: ServiceRobocode,
 		Data: ReqSignUpInfo{
-			Phone: "8612345678912",
-			Email: "palakat96@mail.ru",
+			Phone: "89273268320",
+			Email: "123456@mail.ru",
 			UserInfo: UsInfo{
 				Passport: FIO{
 					Name:       "ххх",
