@@ -41,15 +41,13 @@ func checkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Создание временной директории для кода
 	tempDir, err := ioutil.TempDir("", "code-")
 	if err != nil {
 		http.Error(w, "Could not create temporary directory", http.StatusInternalServerError)
 		return
 	}
-	defer os.RemoveAll(tempDir) // Удалить директорию после завершения обработки
+	defer os.RemoveAll(tempDir)
 
-	// Создание временного файла в этой директории
 	tempFile := filepath.Join(tempDir, "temp.go")
 	err = ioutil.WriteFile(tempFile, []byte(codeReq.Code), 0644)
 	if err != nil {
@@ -66,7 +64,7 @@ func checkHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = cmd.Run()
 	if err != nil {
-		fmt.Printf("gosec error: %s\n", stderr.String()) // Логирование stderr
+		fmt.Printf("gosec error: %s\n", stderr.String())
 		http.Error(w, fmt.Sprintf("Error running gosec: %s", stderr.String()), http.StatusInternalServerError)
 		return
 	}

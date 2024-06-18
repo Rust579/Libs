@@ -19,16 +19,21 @@ import (
 	"context"
 	"fmt"
 	"github.com/skip2/go-qrcode"
+	"log"
 )
 
 func QrCode(ctx *context.Context) {
 	url := "https://habr.com/ru/companies/slurm/articles/704208/"
-	fmt.Println(*ctx)
+	a := *ctx
+	fmt.Println(a)
+
+	token := "9952f1088915435fac3f8f52064bfad86517530116166f8ce5854dd7bef3332e"
+	fmt.Println(token)
 	q, _ := qrcode.New(url, qrcode.Medium)
-
 	str := q.ToSmallString(false)
-
 	fmt.Println(str)
+
+	log.Fatal(fmt.Sprintf("error occured while running swagger server: %s", "err"))
 }
 `
 
@@ -46,11 +51,11 @@ func QrCode(ctx *context.Context) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	_, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Response: %s\n", body)
+	//fmt.Printf("Response: %s\n", body)
 }
