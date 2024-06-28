@@ -4,12 +4,6 @@ package sast;
 
 option go_package = "proto/rpc";
 
-// Сообщение для передачи метаданных о файле
-message FileMetadata {
-  string filename = 1;
-  int64 filesize = 2;
-}
-
 // Сообщение для передачи частей файла
 message FileChunk {
   bytes content = 1;
@@ -17,7 +11,6 @@ message FileChunk {
 
 // Запрос для загрузки файла
 message UploadRequest {
-  FileMetadata metadata = 1;
   FileChunk chunk = 2;
 }
 
@@ -29,21 +22,7 @@ message UploadResponse {
   bytes errors = 4;
 }
 
-// Запрос для скачивания файла
-message DownloadRequest {
-  string filename = 1;
-}
-
-// Ответ для скачивания файла
-message DownloadResponse {
-  oneof response {
-    FileMetadata metadata = 1;
-    FileChunk chunk = 2;
-  }
-}
-
 // Сервис для управления zip архивами
 service SastService {
   rpc Upload(stream UploadRequest) returns (UploadResponse);
-  rpc Download(DownloadRequest) returns (stream DownloadResponse);
 }

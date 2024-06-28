@@ -19,7 +19,7 @@ func GRPC() {
 	defer conn.Close()
 	c := pb.NewSastServiceClient(conn)
 
-	file, err := os.Open("C:/Projects Go/unione.hagrid.service.zip")
+	file, err := os.Open("C:/Projects Go/dockerwrapper.zip")
 	if err != nil {
 		log.Fatalf("failed to open file: %v", err)
 	}

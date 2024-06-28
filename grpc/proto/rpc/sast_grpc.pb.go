@@ -19,8 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	SastService_Upload_FullMethodName   = "/sast.SastService/Upload"
-	SastService_Download_FullMethodName = "/sast.SastService/Download"
+	SastService_Upload_FullMethodName = "/sast.SastService/Upload"
 )
 
 // SastServiceClient is the client API for SastService service.
@@ -30,7 +29,6 @@ const (
 // Сервис для управления zip архивами
 type SastServiceClient interface {
 	Upload(ctx context.Context, opts ...grpc.CallOption) (SastService_UploadClient, error)
-	Download(ctx context.Context, in *DownloadRequest, opts ...grpc.CallOption) (SastService_DownloadClient, error)
 }
 
 type sastServiceClient struct {
@@ -76,39 +74,6 @@ func (x *sastServiceUploadClient) CloseAndRecv() (*UploadResponse, error) {
 	return m, nil
 }
 
-func (c *sastServiceClient) Download(ctx context.Context, in *DownloadRequest, opts ...grpc.CallOption) (SastService_DownloadClient, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &SastService_ServiceDesc.Streams[1], SastService_Download_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &sastServiceDownloadClient{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type SastService_DownloadClient interface {
-	Recv() (*DownloadResponse, error)
-	grpc.ClientStream
-}
-
-type sastServiceDownloadClient struct {
-	grpc.ClientStream
-}
-
-func (x *sastServiceDownloadClient) Recv() (*DownloadResponse, error) {
-	m := new(DownloadResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // SastServiceServer is the server API for SastService service.
 // All implementations must embed UnimplementedSastServiceServer
 // for forward compatibility
@@ -116,7 +81,6 @@ func (x *sastServiceDownloadClient) Recv() (*DownloadResponse, error) {
 // Сервис для управления zip архивами
 type SastServiceServer interface {
 	Upload(SastService_UploadServer) error
-	Download(*DownloadRequest, SastService_DownloadServer) error
 	mustEmbedUnimplementedSastServiceServer()
 }
 
@@ -126,9 +90,6 @@ type UnimplementedSastServiceServer struct {
 
 func (UnimplementedSastServiceServer) Upload(SastService_UploadServer) error {
 	return status.Errorf(codes.Unimplemented, "method Upload not implemented")
-}
-func (UnimplementedSastServiceServer) Download(*DownloadRequest, SastService_DownloadServer) error {
-	return status.Errorf(codes.Unimplemented, "method Download not implemented")
 }
 func (UnimplementedSastServiceServer) mustEmbedUnimplementedSastServiceServer() {}
 
@@ -169,27 +130,6 @@ func (x *sastServiceUploadServer) Recv() (*UploadRequest, error) {
 	return m, nil
 }
 
-func _SastService_Download_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(DownloadRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(SastServiceServer).Download(m, &sastServiceDownloadServer{ServerStream: stream})
-}
-
-type SastService_DownloadServer interface {
-	Send(*DownloadResponse) error
-	grpc.ServerStream
-}
-
-type sastServiceDownloadServer struct {
-	grpc.ServerStream
-}
-
-func (x *sastServiceDownloadServer) Send(m *DownloadResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
 // SastService_ServiceDesc is the grpc.ServiceDesc for SastService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -202,11 +142,6 @@ var SastService_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "Upload",
 			Handler:       _SastService_Upload_Handler,
 			ClientStreams: true,
-		},
-		{
-			StreamName:    "Download",
-			Handler:       _SastService_Download_Handler,
-			ServerStreams: true,
 		},
 	},
 	Metadata: "sast.proto",
