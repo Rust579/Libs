@@ -1,61 +1,98 @@
 package grpc
 
 import (
-	pb "Libs/grpc/proto/rpc"
 	"context"
 	"fmt"
-	"google.golang.org/grpc"
-	"io"
 	"log"
 	"os"
+	"tea.gitpark.ru/sast/shpack/uniapi/goclient"
+	"tea.gitpark.ru/sast/shpack/uniapi/proto/rpc"
+	"time"
 )
 
-func GRPC() {
-	fmt.Println("Start gRPC client")
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
-	c := pb.NewSastServiceClient(conn)
+func GRPCZip() {
+	fmt.Println("Start gRPC client for zip handler")
 
-	file, err := os.Open("C:/Projects Go/dockerwrapper.zip")
+	client := goclient.NewClient("localhost", "50052")
+
+	filePath := "C:/Projects Go/dockerwrapper.zip"
+	buffer1, err := loadLocalFile(filePath)
+	if err != nil {
+		return
+	}
+
+	tempDir := "unzipped"
+
+	_, dockerZip, err := SeparateZipArchive(buffer1, tempDir)
+	if err != nil {
+		fmt.Println("Error separate zip archive:", err)
+		return
+	}
+	defer os.RemoveAll(tempDir)
+
+	buffer2, err := loadLocalFile(dockerZip)
+	if err != nil {
+		return
+	}
+
+	t1 := time.Now()
+
+	resp, err := client.SendStream(context.Background(), "1", buffer2)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+
+	log.Println("time cost:", time.Since(t1))
+	log.Printf("Upload response: %v", resp)
+}
+
+func GRPCDiff() {
+	fmt.Println("Start gRPC client for diff handler")
+
+	client := goclient.NewClient("localhost", "50051")
+
+	req := rpc.DiffRequest{
+		ProjectID:   "3",
+		FileName:    "internal\\service\\logic\\logic_http.go",
+		FileHashSum: "41c48e1bec341b318aace5fb5073c85c6471e63ef6021a19802dbee3b8299cc1",
+		Data: &rpc.Diff{
+			Line: 45,
+			Text: "\"github.com/unione-pro/auth/internal/pkg/notifer\"",
+		},
+	}
+
+	t1 := time.Now()
+
+	resp, err := client.SendDiff(context.Background(), &req)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+
+	log.Println("time cost:", time.Since(t1))
+	log.Printf("Upload response: %v", resp)
+
+}
+
+func loadLocalFile(filePath string) ([]byte, error) {
+
+	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatalf("failed to open file: %v", err)
 	}
 	defer file.Close()
 
-	stream, err := c.Upload(context.Background())
+	fileinfo, err := file.Stat()
 	if err != nil {
-		log.Fatalf("failed to upload file: %v", err)
+		fmt.Println("err file info", err)
 	}
 
-	buffer := make([]byte, 1024)
-	for {
-		n, err := file.Read(buffer)
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatalf("failed to read file: %v", err)
-		}
+	filesize := fileinfo.Size()
+	buffer := make([]byte, filesize)
 
-		err = stream.Send(&pb.UploadRequest{
-			Chunk: &pb.FileChunk{
-				Content: buffer[:n],
-			},
-		})
-		if err != nil {
-			log.Fatalf("failed to send chunk: %v", err)
-		}
-	}
-
-	resp, err := stream.CloseAndRecv()
+	_, err = file.Read(buffer)
 	if err != nil {
-		log.Fatalf("failed to close and receive: %v", err)
+		fmt.Println("err buffer", err)
 	}
 
-	log.Printf("Upload response: %v", resp.Message)
-	log.Printf("Analysis report: %s", string(resp.Report))
-	log.Printf("Analysis errors: %s", string(resp.Errors))
+	return buffer, nil
 }

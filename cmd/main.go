@@ -15,7 +15,7 @@ func main() {
 		logrus.Fatalf("error open config file: %s", err.Error())
 	}
 
-	grpc.GRPC()
+	grpc.GRPCZip()
 
 	/*clients.GetUserData()
 

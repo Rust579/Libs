@@ -1,6 +1,6 @@
 module Libs
 
-go 1.21
+go 1.22.0
 
 toolchain go1.22.2
 
@@ -10,9 +10,10 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
+	github.com/tealeg/xlsx v1.0.5
 	github.com/unione-pro/core v0.1.45
 	go.mongodb.org/mongo-driver v1.12.1
-	google.golang.org/grpc v1.64.0
+	tea.gitpark.ru/sast/shpack v0.0.7
 )
 
 require (
@@ -44,6 +45,7 @@ require (
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	google.golang.org/grpc v1.64.0 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
