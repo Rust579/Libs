@@ -13,7 +13,7 @@ import (
 func GRPCZip() {
 	fmt.Println("Start gRPC client for zip handler")
 
-	client := goclient.NewClient("localhost", "50052")
+	client := goclient.NewClient("localhost", "50051")
 
 	filePath := "C:/Projects Go/dockerwrapper.zip"
 	buffer1, err := loadLocalFile(filePath)
@@ -23,14 +23,14 @@ func GRPCZip() {
 
 	tempDir := "unzipped"
 
-	_, dockerZip, err := SeparateZipArchive(buffer1, tempDir)
+	zip, _, err := SeparateZipArchive(buffer1, tempDir)
 	if err != nil {
 		fmt.Println("Error separate zip archive:", err)
 		return
 	}
 	defer os.RemoveAll(tempDir)
 
-	buffer2, err := loadLocalFile(dockerZip)
+	buffer2, err := loadLocalFile(zip)
 	if err != nil {
 		return
 	}

@@ -2,7 +2,7 @@ package main
 
 import (
 	"Libs/configs"
-	"Libs/grpc"
+	"Libs/diffapplytofile"
 	"github.com/sirupsen/logrus"
 )
 
@@ -15,7 +15,11 @@ func main() {
 		logrus.Fatalf("error open config file: %s", err.Error())
 	}
 
-	grpc.GRPCZip()
+	diffapplytofile.ApplyPatch()
+
+	//grpc.PlyDiffToFile()
+
+	//grpc.PrintDiff()
 
 	/*clients.GetUserData()
 
