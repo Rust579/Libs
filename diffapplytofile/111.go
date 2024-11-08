@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -28,30 +29,43 @@ func ApplyPatch() {
 	patch := Patch{
 		Hunks: []Hunk{
 			{
-				OldStart: 10,
-				OldLines: 0,
-				NewStart: 10,
+				OldStart: 1,
+				OldLines: 1,
+				NewStart: 1,
 				NewLines: 1,
 				Lines: []string{
-					"+",
+					"-package linter",
+					"+package liter",
 				},
 			},
 			{
-				OldStart: 52,
+				OldStart: 3,
 				OldLines: 4,
-				NewStart: 52,
-				NewLines: 0,
+				NewStart: 3,
+				NewLines: 1,
 				Lines: []string{
-					"-if len(lr) == 0 {",
-					"-return nil, nil",
-					"-}",
-					"-",
+					"-import (",
+					"-\t\"os\"",
+					"-\t\"tea.gitpark.ru/sast/dockerwrapper/internal/configs\"",
+					"-)",
+					"+import (\"os\", \"tea.gitpark.ru/sast/dockerwrapper/internal/configs\")",
+				},
+			},
+			{
+				OldStart: 22,
+				OldLines: 0,
+				NewStart: 19,
+				NewLines: 3,
+				Lines: []string{
+					"+\t// implementation",
+					"+\t// 1",
+					"+\t// 2",
 				},
 			},
 		},
 	}
 
-	filePath := "C:\\Projects Go\\copy-main.go"
+	filePath := "C:\\Projects Go\\copy-trivy.go"
 
 	err := applyPatch(filePath, patch)
 	if err != nil {
@@ -78,16 +92,28 @@ func applyPatch(filePath string, patch Patch) error {
 		return fmt.Errorf("could not read file: %v", err)
 	}
 
+	// Сортировка хунков по OldStart в порядке убывания
+	sort.Slice(patch.Hunks, func(i, j int) bool {
+		return patch.Hunks[i].OldStart > patch.Hunks[j].OldStart
+	})
+
 	for _, hunk := range patch.Hunks {
+		oldStart := hunk.OldStart - 1
+		newLines := hunk.Lines
 
-		var newLines []string
-		for _, line := range hunk.Lines {
-			if strings.HasPrefix(line, "+") {
-				newLines = append(newLines, line[1:])
+		// Удаление старых строк
+		lines = append(lines[:oldStart], lines[oldStart+hunk.OldLines:]...)
+
+		// Вставка новых строк
+		for i := len(newLines) - 1; i >= 0; i-- {
+			line := newLines[i]
+			if strings.HasPrefix(line, "-") {
+				continue
+			} else if strings.HasPrefix(line, "+") {
+				line = strings.TrimPrefix(line, "+")
 			}
+			lines = append(lines[:oldStart], append([]string{line}, lines[oldStart:]...)...)
 		}
-
-		lines = append(lines[:hunk.OldStart-1], append(newLines, lines[hunk.NewStart+hunk.OldLines-1:]...)...)
 	}
 
 	outputFile, err := os.Create(filePath)

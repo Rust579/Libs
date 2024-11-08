@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package trivy;
+
+option go_package = "trivyapi/proto/rpc";
+
+// Определение сервиса с двумя методами
+service TrivyService {
+  // Метод для отправки zip-файла в виде []byte
+  rpc UploadStream(stream ZipRequest) returns (Response);
+
+  // Метод для отправки массива строк
+  rpc UploadImage(ImageRequest) returns (Response);
+}
+
+// Сообщение запроса для отправки zip-файла
+message ZipRequest {
+  bytes chunk = 1;
+}
+
+// Сообщение запроса для отправки массива строк
+message ImageRequest {
+  repeated string data = 1;
+}
+
+// Сообщение ответа для обоих методов
+message Response {
+  bool success = 1;
+  TrivyResponse trivy_response = 2;
+}
+
+// Сообщение для TrivyResponse
+message TrivyResponse {
+  repeated Results results = 1;
+}
+
+// Сообщение для Results
+message Results {
+  repeated Vulnerabilities vulnerabilities = 1;
+  string image = 2;
+}
+
+// Сообщение для Vulnerabilities
+message Vulnerabilities {
+  string vulnerability_id = 1;
+  string pkg_id = 2;
+  string title = 3;
+  string severity = 4;
+}

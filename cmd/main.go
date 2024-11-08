@@ -2,8 +2,11 @@ package main
 
 import (
 	"Libs/configs"
-	"Libs/diffapplytofile"
+	"Libs/grpc/uniapi"
+	"context"
 	"github.com/sirupsen/logrus"
+	"os/signal"
+	"syscall"
 )
 
 var gfsd = make(chan bool)
@@ -15,20 +18,52 @@ func main() {
 		logrus.Fatalf("error open config file: %s", err.Error())
 	}
 
-	diffapplytofile.ApplyPatch()
+	projectZip := "C:/Projects_Go/testProjects/GoTestWithOutCore.zip"
+	//libsZip1 := "C:/Projects_Go/testProjects/core68.zip"
+	//libsZip2 := "C:/Projects_Go/testProjects/core69.zip"
+	projectId := "aaa"
+	unzipDir := "unzipped"
+	port := "50051"
 
-	//grpc.PlyDiffToFile()
+	uniapi.GRPCZips(projectZip, projectId, unzipDir, port)
 
-	//grpc.PrintDiff()
+	/*for i := 0; i < 1; i++ {
+		go func() {
+			go func() {
+				uniapi.GRPCZip(projectZip, strconv.Itoa(i), strconv.Itoa(i), port)
+			}()
+			time.Sleep(300 * time.Millisecond)
+			go func() {
+				uniapi.GRPCDiff(strconv.Itoa(i), port)
+			}()
+			go func() {
+				uniapi.GRPCDiff2(strconv.Itoa(i), port)
+			}()
+		}()
+	}*/
 
-	/*clients.GetUserData()
+	/*go func() {
+		uniapi.GRPCZip(projectZip, projectId, unzipDir, port)
+	}()
 
-	hagrid.InitRmq()
+	time.Sleep(10 * time.Second)
 
-	websoket_client.WSClient()
+	go func() {
+		uniapi.GRPCLibs(libsZip1, projectId, port)
+	}()
 
-	QR.QrCode("https://habr.com/ru/companies/slurm/articles/704208/")*/
+	time.Sleep(15 * time.Second)
 
-	//<-gfsd
+	go func() {
+		uniapi.GRPCDiff2(projectId, port)
+	}()
 
+	time.Sleep(15 * time.Second)
+
+	go func() {
+		uniapi.GRPCLibs2(libsZip2, projectId, port)
+	}()*/
+
+	ctx, _ := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	<-ctx.Done()
 }
