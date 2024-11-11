@@ -18,6 +18,8 @@ func main() {
 		logrus.Fatalf("error open config file: %s", err.Error())
 	}
 
+	ctx, _ := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+
 	projectZip := "C:/Projects_Go/testProjects/GoTestWithOutCore.zip"
 	//libsZip1 := "C:/Projects_Go/testProjects/core68.zip"
 	//libsZip2 := "C:/Projects_Go/testProjects/core69.zip"
@@ -25,7 +27,7 @@ func main() {
 	unzipDir := "unzipped"
 	port := "50051"
 
-	uniapi.GRPCZips(projectZip, projectId, unzipDir, port)
+	uniapi.GRPCZips(ctx, projectZip, projectId, unzipDir, port)
 
 	/*for i := 0; i < 1; i++ {
 		go func() {
@@ -64,6 +66,5 @@ func main() {
 		uniapi.GRPCLibs2(libsZip2, projectId, port)
 	}()*/
 
-	ctx, _ := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	<-ctx.Done()
 }
