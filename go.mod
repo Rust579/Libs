@@ -13,7 +13,7 @@ require (
 	github.com/tealeg/xlsx v1.0.5
 	github.com/unione-pro/core v0.1.45
 	go.mongodb.org/mongo-driver v1.16.1
-	tea.gitpark.ru/sast/shpack v0.5.0
+	tea.gitpark.ru/sast/shpack v0.5.3
 )
 
 require (

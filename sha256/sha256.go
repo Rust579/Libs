@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	file, err := os.Open("C:\\Projects_Go\\testProjects\\GoTestWithOutCore.zip")
+	file, err := os.Open("C:\\Projects_Go\\TestProjectsSAST\\PyTest\\sast_reqs.py")
 	if err != nil {
 		fmt.Println(err)
 	}
